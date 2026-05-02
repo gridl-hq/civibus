@@ -363,3 +363,13 @@ def test_deploy_job_rollback_fails_fast_when_prior_sha_unavailable() -> None:
 
     assert "UNAVAILABLE" in run_script
     assert "cannot rollback automatically" in run_script
+
+
+def test_deploy_workflow_rollback_lane_uses_same_image_repository_source_of_truth() -> None:
+    """Rollback must export the same GHCR repo source as the publish and rollout lanes."""
+    parsed = _parse_deploy_workflow()
+    steps = parsed["jobs"]["deploy"].get("steps", [])
+    rollback_step = _find_step(steps, "Rollback to previously deployed SHA on smoke failure")
+    rollback_script = rollback_step.get("run", "")
+
+    assert 'export CIVIBUS_IMAGE_REPO="ghcr.io/${{ github.repository }}"' in rollback_script
