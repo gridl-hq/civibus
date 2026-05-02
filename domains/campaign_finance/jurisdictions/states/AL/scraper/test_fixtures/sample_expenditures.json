@@ -1,0 +1,29 @@
+{
+  "totalRecords": 2,
+  "data": [
+    {
+      "TRANSACTIONID": "200001",
+      "COMMITTEEID": "CC2024-001",
+      "RECIPIENTNAME": "Friends of Smith for Governor",
+      "PAYEE": "BIRMINGHAM PRINTING COMPANY",
+      "EXPENDITURETYPE": "Campaign Expense",
+      "CITYSTATE": "Birmingham, AL",
+      "ZIP": "35203",
+      "TRANSACTIONDATE": "06/20/2021",
+      "FILINGDATE": "07/01/2021",
+      "AMOUNT": "1200.00"
+    },
+    {
+      "TRANSACTIONID": "200002",
+      "COMMITTEEID": "CC2024-001",
+      "RECIPIENTNAME": "Friends of Smith for Governor",
+      "PAYEE": "MARK DAVIS",
+      "EXPENDITURETYPE": "Campaign Expense",
+      "CITYSTATE": "Tuscaloosa, AL",
+      "ZIP": "35401",
+      "TRANSACTIONDATE": "03/10/2026",
+      "FILINGDATE": "03/15/2026",
+      "AMOUNT": "750.00"
+    }
+  ]
+}
