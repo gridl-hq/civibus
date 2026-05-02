@@ -190,6 +190,20 @@ def test_deploy_job_performs_ssh_based_remote_rollout() -> None:
     )
 
 
+def test_deploy_job_uses_single_image_repository_source_of_truth() -> None:
+    """Workflow rollout must export CIVIBUS_IMAGE_REPO for compose image references."""
+    parsed = _parse_deploy_workflow()
+    steps = parsed["jobs"]["deploy"].get("steps", [])
+    rollout_step = _find_step(steps, "Roll out api and web via remote compose")
+    run_script = rollout_step.get("run", "")
+
+    assert 'export CIVIBUS_IMAGE_REPO="ghcr.io/${{ github.repository }}"' in run_script
+
+    compose_text = (REPO_ROOT / "infra/docker-compose.prod.yml").read_text(encoding="utf-8")
+    assert 'image: "${CIVIBUS_IMAGE_REPO:-ghcr.io/gridl-dev/civibus_dev}/api:${IMAGE_TAG:-latest}"' in compose_text
+    assert 'image: "${CIVIBUS_IMAGE_REPO:-ghcr.io/gridl-dev/civibus_dev}/web:${IMAGE_TAG:-latest}"' in compose_text
+
+
 def _find_step(steps: list[dict], step_name: str) -> dict:
     """Return a deploy step by exact name; fail with a clear contract message."""
     for step in steps:

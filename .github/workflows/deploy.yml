@@ -199,6 +199,7 @@ jobs:
           GIT_TERMINAL_PROMPT=0 GIT_ASKPASS="${askpass_script}" git fetch origin "$deploy_git_sha"
           git checkout --detach "$deploy_git_sha"
           cat "${deploy_token_file}" | docker login ghcr.io -u "${deploy_actor}" --password-stdin
+          export CIVIBUS_IMAGE_REPO="ghcr.io/${{ github.repository }}"
           export IMAGE_TAG="$deploy_git_sha"
           bash infra/scripts/prod_compose.sh up -d --wait --wait-timeout 180 db
           bash infra/scripts/prod_compose.sh exec -T db psql -U civibus -d civibus -v ON_ERROR_STOP=1 < domains/civics/schema/migrations/2026_04_27_electoral_division_geometry.sql
