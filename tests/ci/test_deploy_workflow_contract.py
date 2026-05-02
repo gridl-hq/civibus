@@ -296,6 +296,16 @@ def test_deploy_job_runs_production_smoke_after_rollout() -> None:
     assert "SMOKE_BASE_URL=" in run_script
 
 
+def test_deploy_job_runs_production_smoke_via_bash_wrapper() -> None:
+    """Smoke gate must invoke the runner script via bash, not executable bit state."""
+    parsed = _parse_deploy_workflow()
+    steps = parsed["jobs"]["deploy"].get("steps", [])
+    smoke_step = _find_step(steps, "Run production smoke gate")
+    run_script = smoke_step.get("run", "")
+
+    assert "bash ./tests/smoke/run-playwright.sh -- tests/smoke/dwo_mvp_release.spec.ts --reporter=line" in run_script
+
+
 def test_deploy_job_rolls_back_with_prod_compose_after_smoke_failure() -> None:
     """Rollback must be conditional on smoke failure and use the same prod compose owner."""
     parsed = _parse_deploy_workflow()

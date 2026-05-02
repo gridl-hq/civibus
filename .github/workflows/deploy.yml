@@ -219,7 +219,7 @@ jobs:
           fi
           pushd web >/dev/null
           SMOKE_MODE=production SMOKE_BASE_URL="${PROD_SMOKE_BASE_URL}" \
-            ./tests/smoke/run-playwright.sh -- tests/smoke/dwo_mvp_release.spec.ts --reporter=line
+            bash ./tests/smoke/run-playwright.sh -- tests/smoke/dwo_mvp_release.spec.ts --reporter=line
           popd >/dev/null
 
       - name: Rollback to previously deployed SHA on smoke failure
