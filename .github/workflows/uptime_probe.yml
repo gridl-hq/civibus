@@ -1,10 +1,10 @@
 name: Uptime probe — /api/health/content
 
-# External-infrastructure verifier. Hits civibus.org/api/health/content
+# External-infrastructure verifier. Hits ${{ env.PROBE_BASE_URL }}/api/health/content
 # every 5 minutes and opens / comments-on / closes a GitHub issue with
 # the `uptime-incident` label based on the response.
 #
-# Anchored postmortem: docs/operations/postmortems/2026_04_30_prod_data_link_severed.md
+# Anchored postmortem: docs/howto/operations/postmortems/2026_04_30_prod_data_link_severed.md
 # Apr 30 incident hid for 16h because every observer ran on or near the
 # prod VM. This workflow is structurally outside that loop — it runs on
 # GitHub's infrastructure, not Hetzner — so when the prod stack is
@@ -18,6 +18,15 @@ on:
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
+    inputs:
+      probe_url_override:
+        description: Full one-run probe URL override for manual drills
+        required: false
+        default: ""
+        type: string
+
+env:
+  PROBE_BASE_URL: https://civibus-caddy.fly.dev
 
 permissions:
   contents: read
@@ -30,13 +39,15 @@ jobs:
     steps:
       - name: Probe content health endpoint
         id: probe
+        env:
+          PROBE_URL_OVERRIDE: ${{ github.event.inputs.probe_url_override }}
         run: |
           set +e
-          STATUS=$(curl -sS \
+          TARGET="${PROBE_URL_OVERRIDE:-${PROBE_BASE_URL}/api/health/content}"
+          STATUS=$(curl -sS "$TARGET" \
             --max-time 30 \
             --write-out '%{http_code}' \
-            --output /tmp/body.json \
-            https://civibus.org/api/health/content)
+            --output /tmp/body.json)
           CURL_EXIT=$?
           set -e
 
@@ -62,6 +73,7 @@ jobs:
 
           echo "healthy=${HEALTHY}" >> "$GITHUB_OUTPUT"
           echo "status=${STATUS}" >> "$GITHUB_OUTPUT"
+          echo "target=${TARGET}" >> "$GITHUB_OUTPUT"
           # Multi-line-safe output for DETAIL (may contain JSON / newlines).
           {
             echo "detail<<DETAIL_DELIMITER_$$"
@@ -76,6 +88,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           NUMBER=$(gh issue list \
+            --repo "${{ github.repository }}" \
             --label uptime-incident \
             --state open \
             --json number \
@@ -91,39 +104,49 @@ jobs:
         run: |
           NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           gh issue comment "${{ steps.find.outputs.number }}" \
+            --repo "${{ github.repository }}" \
             --body "Probe at ${NOW} returned 200 healthy. Endpoint recovered. Closing."
-          gh issue close "${{ steps.find.outputs.number }}"
+          gh issue close "${{ steps.find.outputs.number }}" \
+            --repo "${{ github.repository }}"
 
       - name: Comment on existing issue (endpoint still failing)
         if: steps.probe.outputs.healthy == 'false' && steps.find.outputs.number != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROBE_DETAIL: ${{ steps.probe.outputs.detail }}
+          PROBE_STATUS: ${{ steps.probe.outputs.status }}
         run: |
           NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          DETAIL="${{ steps.probe.outputs.detail }}"
-          STATUS="${{ steps.probe.outputs.status }}"
+          DETAIL="${PROBE_DETAIL}"
+          STATUS="${PROBE_STATUS}"
           RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           gh issue comment "${{ steps.find.outputs.number }}" \
+            --repo "${{ github.repository }}" \
             --body "Probe at ${NOW} — still failing. Status: ${STATUS}. Detail: ${DETAIL}. Run: ${RUN_URL}"
 
       - name: Open new uptime-incident issue (endpoint failing, no existing issue)
         if: steps.probe.outputs.healthy == 'false' && steps.find.outputs.number == ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROBE_DETAIL: ${{ steps.probe.outputs.detail }}
+          PROBE_STATUS: ${{ steps.probe.outputs.status }}
+          PROBE_TARGET: ${{ steps.probe.outputs.target }}
         run: |
           # Idempotent label create. --force lets us update the color/description
           # without erroring if the label already exists.
           gh label create uptime-incident \
+            --repo="${{ github.repository }}" \
             --color FF6B6B \
-            --description "Civibus.org uptime probe failure" \
+            --description "${{ env.PROBE_BASE_URL }} uptime probe failure" \
             --force 2>/dev/null || true
 
           NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          STATUS="${{ steps.probe.outputs.status }}"
-          DETAIL="${{ steps.probe.outputs.detail }}"
+          STATUS="${PROBE_STATUS}"
+          DETAIL="${PROBE_DETAIL}"
+          TARGET="${PROBE_TARGET}"
           RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
-          BODY="The civibus.org content health probe failed.
+          BODY="The ${{ env.PROBE_BASE_URL }} content health probe failed.
 
           **Status:** ${STATUS}
           **Detail:** ${DETAIL}
@@ -135,11 +158,12 @@ jobs:
           workflow will auto-close this issue when the endpoint returns 200
           healthy again.
 
-          - Endpoint: https://civibus.org/api/health/content
+          - Endpoint: ${TARGET}
           - Owner: api/health_content.py + api/main.py:186
-          - Anchored postmortem: docs/operations/postmortems/2026_04_30_prod_data_link_severed.md"
+          - Anchored postmortem: docs/howto/operations/postmortems/2026_04_30_prod_data_link_severed.md"
 
           gh issue create \
+            --repo "${{ github.repository }}" \
             --label uptime-incident \
             --title "[uptime] /api/health/content returned ${STATUS} at ${NOW}" \
             --body "${BODY}"

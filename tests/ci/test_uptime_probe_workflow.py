@@ -42,15 +42,40 @@ def test_workflow_runs_on_5_minute_cron(workflow_parsed: dict) -> None:
     on_block = workflow_parsed.get("on") or workflow_parsed.get(True)
     assert on_block is not None, "workflow has no `on:` trigger block"
     schedules = on_block["schedule"]
-    assert any(s["cron"] == "*/5 * * * *" for s in schedules), (
-        f"expected '*/5 * * * *' cron, found {schedules}"
-    )
+    assert any(s["cron"] == "*/5 * * * *" for s in schedules), f"expected '*/5 * * * *' cron, found {schedules}"
 
 
-def test_workflow_hits_canonical_health_endpoint(workflow_text: str) -> None:
-    # The endpoint URL is the contract. If a refactor splits or aliases it,
-    # this test forces an explicit decision instead of silent drift.
-    assert "civibus.org/api/health/content" in workflow_text
+def test_workflow_uses_probe_base_url_as_single_source_of_truth(workflow_parsed: dict, workflow_text: str) -> None:
+    """Normal probes must derive from the top-level base URL, not hard-coded host literals."""
+    assert workflow_parsed["env"]["PROBE_BASE_URL"] == "https://civibus-caddy.fly.dev"
+    assert "${{ env.PROBE_BASE_URL }}/api/health/content" in workflow_text
+    assert "civibus.org" not in workflow_text.lower()
+
+
+def test_workflow_dispatch_accepts_full_probe_url_override(workflow_parsed: dict, workflow_text: str) -> None:
+    """Manual drills may supply a complete one-run target URL used verbatim."""
+    on_block = workflow_parsed.get("on") or workflow_parsed.get(True)
+    probe_override = on_block["workflow_dispatch"]["inputs"]["probe_url_override"]
+    assert probe_override["type"] == "string"
+    assert probe_override["required"] is False
+    assert probe_override["default"] == ""
+    assert "${{ github.event.inputs.probe_url_override }}" in workflow_text
+    assert 'TARGET="${PROBE_URL_OVERRIDE:-${PROBE_BASE_URL}/api/health/content}"' in workflow_text
+    assert 'curl -sS "$TARGET"' in workflow_text
+    assert 'echo "target=${TARGET}" >> "$GITHUB_OUTPUT"' in workflow_text
+    assert "PROBE_TARGET: ${{ steps.probe.outputs.target }}" in workflow_text
+
+
+def test_probe_outputs_are_passed_to_shell_via_env(workflow_text: str) -> None:
+    """Response-body JSON must not be interpolated directly into shell assignments."""
+    assert "PROBE_DETAIL: ${{ steps.probe.outputs.detail }}" in workflow_text
+    assert "PROBE_STATUS: ${{ steps.probe.outputs.status }}" in workflow_text
+    assert "PROBE_TARGET: ${{ steps.probe.outputs.target }}" in workflow_text
+    assert 'DETAIL="${PROBE_DETAIL}"' in workflow_text
+    assert 'STATUS="${PROBE_STATUS}"' in workflow_text
+    assert 'TARGET="${PROBE_TARGET}"' in workflow_text
+    assert 'DETAIL="${{ steps.probe.outputs.detail }}"' not in workflow_text
+    assert 'STATUS="${{ steps.probe.outputs.status }}"' not in workflow_text
 
 
 def test_workflow_uses_uptime_incident_label(workflow_text: str) -> None:
@@ -93,3 +118,31 @@ def test_workflow_uses_jq_for_body_healthy_check(workflow_text: str) -> None:
     # check would have caught the empty DB. The probe's contract is that 200 is
     # necessary but not sufficient — body.healthy must also be true.
     assert ".healthy == true" in workflow_text
+
+
+def test_issue_commands_include_explicit_repository_context(workflow_text: str) -> None:
+    """Issue commands must not depend on a local git checkout for repo context."""
+    required_issue_commands = (
+        "gh issue list",
+        "gh issue comment",
+        "gh issue close",
+        "gh issue create",
+    )
+    for command in required_issue_commands:
+        command_index = workflow_text.find(command)
+        assert command_index >= 0, f"missing expected command `{command}`"
+        repo_arg_index = workflow_text.find('--repo "${{ github.repository }}"', command_index)
+        assert repo_arg_index >= 0, (
+            f'`{command}` must include `--repo "${{{{ github.repository }}}}"` '
+            "to avoid git-checkout-dependent repository discovery"
+        )
+
+
+def test_label_create_command_includes_explicit_repository_context(workflow_text: str) -> None:
+    """Label management must also target the current mirror explicitly."""
+    label_command_index = workflow_text.find("gh label create uptime-incident")
+    assert label_command_index >= 0, "missing label-create command for uptime-incident"
+    force_arg_index = workflow_text.find("--force", label_command_index)
+    assert force_arg_index >= 0, "label-create command must keep idempotent --force behavior"
+    label_command = workflow_text[label_command_index:force_arg_index]
+    assert '--repo="${{ github.repository }}"' in label_command, "gh label create must include explicit --repo context"
