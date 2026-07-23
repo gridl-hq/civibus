@@ -18,9 +18,10 @@ import re
 import shutil
 import signal
 import subprocess
+import tempfile
 import time
 from pathlib import Path
-from typing import Sequence
+from typing import Iterator, Sequence
 
 import pytest
 
@@ -130,8 +131,15 @@ def test_long_running_dispatch_wrapper_does_not_alter_runner_or_job_builders() -
 
 
 @pytest.fixture()
-def test_repo(tmp_path: Path) -> Path:
-    return _build_test_repo(tmp_path)
+def test_repo() -> Iterator[Path]:
+    # GitHub's Linux runner places pytest roots beneath world-writable /tmp,
+    # which the production env loader correctly rejects anywhere in the
+    # ancestry. Build the synthetic repo beside the checked-out repo instead.
+    secure_root = Path(tempfile.mkdtemp(prefix="civibus_dispatch_contract_", dir=REPO_ROOT.parent))
+    try:
+        yield _build_test_repo(secure_root)
+    finally:
+        shutil.rmtree(secure_root)
 
 
 def test_wrapper_rejects_missing_artifact_id(test_repo: Path) -> None:

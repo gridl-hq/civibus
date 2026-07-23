@@ -7,6 +7,8 @@ import os
 import subprocess
 from pathlib import Path
 
+import pytest
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PROBE_PATH = REPO_ROOT / "infra/scripts/probe_deployed_surface_parity.sh"
@@ -39,11 +41,10 @@ FAIL_CLOSED_PAGE_BODIES = {
     "/committee/jon-ossoff-for-senate": "Key metrics",
     "/compare": "Compare officeholders",
     "/calendar": "Election calendar",
+    "/coverage": "campaign_finance",
+    "/data-sources": "campaign_finance",
 }
 KNOWN_RED_PAGE_BODIES = {
-    "/coverage": "Coverage",
-    "/data-sources": "Data sources",
-    "/state/GA": "Georgia",
     "/sitemap.xml": "<urlset",
 }
 DEFAULT_PAGE_BODIES = FAIL_CLOSED_PAGE_BODIES | KNOWN_RED_PAGE_BODIES
@@ -135,7 +136,7 @@ def test_deployed_surface_parity_probe_accepts_matching_fixture_surface(tmp_path
         assert f"page_status {page_path} 200 marker_ok" in result.stdout
     for page_path in KNOWN_RED_PAGE_BODIES:
         assert f"WARN known_red_page {page_path} 200" in result.stdout
-    assert "surfaces_probed=11 failed=0" in result.stdout
+    assert "surfaces_probed=13 failed=0" in result.stdout
     assert "surface_parity_ok" in result.stdout
 
 
@@ -270,7 +271,7 @@ def test_deployed_surface_parity_probe_fails_on_status_200_without_donor_result_
 
     assert result.returncode != 0
     assert 'page_content_marker_missing /donors?q=smith&by=name marker=data-testid="donor-result-row"' in result.stderr
-    assert "surfaces_probed=11 failed=1" in result.stdout
+    assert "surfaces_probed=13 failed=1" in result.stdout
 
 
 def test_deployed_surface_parity_probe_aggregates_failures_and_warns_all_known_red_pages(tmp_path: Path) -> None:
@@ -293,9 +294,10 @@ def test_deployed_surface_parity_probe_aggregates_failures_and_warns_all_known_r
     assert "page_status /calendar 200 marker_ok" in result.stdout
     for page_path in KNOWN_RED_PAGE_BODIES:
         assert f"WARN known_red_page {page_path} 200" in result.stdout
-    assert "surfaces_probed=11 failed=1" in result.stdout
+    assert "surfaces_probed=13 failed=1" in result.stdout
 
 
+@pytest.mark.dev_repo_only
 def test_fly_runbook_documents_deployed_surface_parity_probe() -> None:
     runbook_text = RUNBOOK_PATH.read_text(encoding="utf-8")
 
