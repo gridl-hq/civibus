@@ -52,8 +52,6 @@ export type OfficeCurrentHolderCard = {
   date_precision: DatePrecisionLiteral;
 };
 
-/**
- */
 export type OfficeholdingTimelineRow = {
   officeholding_id: string;
   person_id: string;
@@ -94,8 +92,6 @@ export type CandidacySummary = {
   incumbent_challenge: string | null;
 };
 
-/**
- */
 export type OfficeDetailResponse = {
   id: string;
   name: string;
@@ -116,8 +112,6 @@ export type OfficeDetailResponse = {
   sources: SourceInfo[];
 };
 
-/**
- */
 export type ContestDetailResponse = {
   id: string;
   name: string;
@@ -206,8 +200,6 @@ export type CongressMemberSummary = {
   person_detail_path: string;
 };
 
-/**
- */
 export type CongressMemberMoneySummary = {
   person_id: string;
   person_name: string;

@@ -107,8 +107,6 @@ async function resolvePersonMoneyHeadlineFromSections(
   }
 }
 
-/**
- */
 function buildUnavailableContributionInsights(
   personId: string,
   selectedCycle = DEFAULT_BACKEND_SELECTED_CYCLE
@@ -163,8 +161,6 @@ function buildUnavailableContributionInsights(
   };
 }
 
-/**
- */
 async function loadContributionInsightsOutcome(
   apiClient: ApiClient,
   personId: string,
@@ -183,8 +179,6 @@ async function loadContributionInsightsOutcome(
   }
 }
 
-/**
- */
 function loadBackendSelectedCycleMoney(
   apiClient: ApiClient,
   personId: string,

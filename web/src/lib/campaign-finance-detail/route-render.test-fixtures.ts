@@ -211,8 +211,6 @@ export const SAMPLE_TRANSACTION = {
   date_is_reliable: true
 };
 
-/**
- */
 export function buildRouteRenderFilingRow(
   sequence: number,
   coverageEndDate: string | null

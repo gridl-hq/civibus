@@ -217,8 +217,6 @@ function guardUnhandledRejection(promise: Promise<unknown>): void {
   void promise.catch(() => {});
 }
 
-/**
- */
 function collectLinkedCommitteeIds(
   summary: CandidateFundraisingSummary,
   principalCommitteeId: string | null
@@ -347,8 +345,6 @@ function createEmptyContestCandidateFinanceSection(personId: string): ContestCan
   };
 }
 
-/**
- */
 function selectPersonCandidateFinanceSection(
   sections: PersonCandidateFinanceSection[],
   personId: string
@@ -366,8 +362,6 @@ function selectPersonCandidateFinanceSection(
   return sections[0];
 }
 
-/**
- */
 export async function fetchContestCandidateFinanceByPersonId(
   apiClient: ApiClient,
   request: ContestCandidateFinanceRequest

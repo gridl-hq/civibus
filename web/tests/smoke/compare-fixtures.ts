@@ -16,8 +16,6 @@ const COVERAGE_START_DATE = "2025-01-01";
 const COVERAGE_END_DATE = "2026-06-30";
 const NO_REPORTED_MONEY = "No reported/loaded money.";
 
-/**
- */
 type FixtureConfig = {
   id: string;
   name: string;
@@ -47,8 +45,6 @@ type FixtureConfig = {
   candidateSummaryStatus?: number;
 };
 
-/**
- */
 function buildPersonDetail(config: FixtureConfig) {
   const [firstName, ...lastNameParts] = config.name.split(" ");
   return {
@@ -86,8 +82,6 @@ function buildPersonDetail(config: FixtureConfig) {
   };
 }
 
-/**
- */
 function buildCandidate(config: FixtureConfig) {
   return {
     id: config.candidateId,
@@ -121,8 +115,6 @@ function buildCandidateListItem(candidate: ReturnType<typeof buildCandidate>) {
   };
 }
 
-/**
- */
 function buildContributionInsights(config: FixtureConfig) {
   const hasData = config.hasItemizedData !== false;
   const itemizedTotal = hasData ? config.charts.monthlyMax : "0.00";
@@ -229,8 +221,6 @@ function buildContributionInsights(config: FixtureConfig) {
   };
 }
 
-/**
- */
 function buildCandidateSummary(config: FixtureConfig) {
   const raised = Number(config.totals.raised);
   const spent = Number(config.totals.spent);
@@ -274,8 +264,6 @@ function buildIndependentExpenditureSummary(config: FixtureConfig) {
   };
 }
 
-/**
- */
 function buildIndependentExpenditures(config: FixtureConfig) {
   return [
     {
@@ -313,8 +301,6 @@ function percentLabel(value: string): string {
   return `${(Number(value) * 100).toFixed(1)}%`;
 }
 
-/**
- */
 function buildOfficeholderFixture(config: FixtureConfig) {
   const candidate = buildCandidate(config);
   const hasSummary = config.candidateSummaryStatus !== 404;

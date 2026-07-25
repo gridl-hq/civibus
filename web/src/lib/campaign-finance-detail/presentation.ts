@@ -49,8 +49,6 @@ export type CampaignFinanceFactRow = {
   href: string | null;
 };
 
-/**
- */
 export type CommitteeTransactionRow = {
   id: string;
   date: string;
@@ -503,8 +501,6 @@ type NormalizedCommitteeFilingFact = {
 
 type FilingFactSortDirection = "chronological" | "newest-first";
 
-/**
- */
 function compareFilingFactsByCoverageEndDate(
   left: NormalizedCommitteeFilingFact,
   right: NormalizedCommitteeFilingFact,
@@ -533,8 +529,6 @@ function compareFilingFactsByCoverageEndDate(
   return left.originalIndex - right.originalIndex;
 }
 
-/**
- */
 function buildNormalizedCommitteeFilingFacts(
   filingBreakdown: CommitteeFilingBreakdown
 ): NormalizedCommitteeFilingFact[] {
@@ -548,8 +542,6 @@ function buildNormalizedCommitteeFilingFacts(
     .sort((left, right) => compareFilingFactsByCoverageEndDate(left, right, "chronological"));
 }
 
-/**
- */
 function buildCashOnHandTrendPoints(filingFacts: NormalizedCommitteeFilingFact[]): CashOnHandPoint[] {
   const points: CashOnHandPoint[] = [];
   let previousPointFact: NormalizedCommitteeFilingFact | null = null;
@@ -1032,8 +1024,6 @@ function buildCommitteeCashOnHandTrendFigure(
   };
 }
 
-/**
- */
 export function buildCommitteeHighSignalSummaryPresentation(
   summary: CommitteeFundraisingSummary,
   filingBreakdown: CommitteeFilingBreakdown
@@ -1056,8 +1046,6 @@ export function buildCommitteeHighSignalSummaryPresentation(
   };
 }
 
-/**
- */
 export function buildCommitteeDetailShellPresentation(
   detail: CommitteeDetailResponse
 ): CommitteeDetailShellPresentation {
@@ -1075,8 +1063,6 @@ export function buildCommitteeDetailShellPresentation(
   };
 }
 
-/**
- */
 export function buildCandidateDetailShellPresentation(
   detail: CandidateDetailResponse,
   options?: {
@@ -1195,8 +1181,6 @@ function sanitizeMethodologyHref(methodologyHref: string): string {
   return sanitizeExternalUrl(methodologyHref) ?? "/methodology";
 }
 
-/**
- */
 export function buildCandidateCompletenessWarnings(
   summary: CandidateFundraisingSummary,
   l10Reference: CandidateL10Reference | null
@@ -1281,8 +1265,6 @@ function buildOutsideSpendingTransactionRows(
   }));
 }
 
-/**
- */
 function buildOutsideSpendingChartRows(
   ieSummary: IndependentExpenditureSummary
 ): OutsideSpendingRow[] {
@@ -1316,8 +1298,6 @@ function buildOutsideSpendingTopSpenderChartRows(
   }));
 }
 
-/**
- */
 function buildOutsideSpendingFigure(
   ieSummary: IndependentExpenditureSummary | null,
   selectedCycleOverride: number | null = null
@@ -1382,8 +1362,6 @@ export function selectOutsideSpendingTransactionsForCycle(
     : ieTransactions;
 }
 
-/**
- */
 export function buildOutsideSpendingPresentation(
   ieSummary: IndependentExpenditureSummary | null,
   ieTransactions: IndependentExpenditureResponse[]
@@ -1497,8 +1475,6 @@ function isCommitteeOutsideSpendingEmpty(activity: CommitteeIndependentExpenditu
   );
 }
 
-/**
- */
 export function buildCommitteeOutsideSpendingPresentation(
   activity: CommitteeIndependentExpenditureActivity
 ): CommitteeOutsideSpendingPresentation {
@@ -1516,8 +1492,6 @@ export function buildCommitteeOutsideSpendingPresentation(
   };
 }
 
-/**
- */
 export function buildCandidateCommitteeBreakdown(
   summary: CandidateFundraisingSummary
 ): CandidateCommitteeBreakdownRow[] {

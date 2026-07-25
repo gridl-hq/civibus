@@ -58,8 +58,6 @@ function hasSearchQuery(query: SearchPagePathParams['q']): query is string {
   return query !== undefined && query !== null && query !== '';
 }
 
-/**
- */
 function buildSearchQueryParams(
   params: SearchPagePathParams,
   includeEmptyQuery: boolean

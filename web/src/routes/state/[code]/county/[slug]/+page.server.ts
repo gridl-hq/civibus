@@ -54,8 +54,6 @@ function findCountyFeatureBySlug(
   return null;
 }
 
-/**
- */
 export const load: PageServerLoad = ({ params, locals }) =>
   withApiResponseErrorHandling(async () => {
     const stateCode = params.code.toUpperCase();

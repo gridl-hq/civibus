@@ -109,8 +109,6 @@ export async function expectCandidateKeyFinancialsReady(
   assertCandidateKeyFinancialsTextReady((await keyMetrics.textContent()) ?? "");
 }
 
-/**
- */
 export async function expectActionToVisibleContentWithinBudget({
   label,
   budgetMs,
@@ -200,8 +198,6 @@ const RENDERED_MONEY_MULTIPLIERS = {
   B: 1_000_000_000
 } as const;
 
-/**
- */
 export function parseRenderedMoneyLabel(label: string): number {
   const match = RENDERED_MONEY_PATTERN.exec(label.trim());
   if (!match?.groups) {
@@ -239,8 +235,6 @@ function parseAlpha(color: string): number {
   return Number(colorAlpha?.[1] ?? 1);
 }
 
-/**
- */
 function samplePaint(sample: SvgPaintSample): {
   color: string;
   alpha: number;
@@ -282,8 +276,6 @@ export async function chartRegion(page: Page, label: string | RegExp): Promise<L
   return page.getByLabel(new RegExp(`^${escapeRegExp(label)}(?: for .*)?$`, "i")).first();
 }
 
-/**
- */
 async function sampleVisibleSvgPaints(region: Locator, selector: string): Promise<SvgPaintSample[]> {
   // eslint-disable-next-line playwright/no-raw-locators -- the oracle must inspect package-rendered SVG paint internals.
   return (await region.locator(selector).evaluateAll((elements: Element[]) =>
@@ -572,8 +564,6 @@ export function formatCapturedBrowserValue(value: unknown): string {
   }
 }
 
-/**
- */
 async function formatConsoleMessage(message: any): Promise<string> {
   const args = message.args();
   if (args.length === 0) {
@@ -592,8 +582,6 @@ async function formatConsoleMessage(message: any): Promise<string> {
   return values.join(" ");
 }
 
-/**
- */
 export function capturePageLoadErrors(page: any) {
   const errors: string[] = [];
   const pendingConsoleErrors: Promise<void>[] = [];

@@ -11,8 +11,6 @@ const INVALID_CYCLE_ERROR = {
   detail: "The cycle query parameter must be a single four-digit election cycle."
 };
 
-/**
- */
 function parseSelectedCycle(searchParams: URLSearchParams): number | undefined {
   const cycleValues = searchParams.getAll("cycle");
   if (cycleValues.length === 0) {
@@ -31,8 +29,6 @@ function parseSelectedCycle(searchParams: URLSearchParams): number | undefined {
   return Number(rawCycle);
 }
 
-/**
- */
 export const load: PageServerLoad = ({ params, locals, url }) =>
   withApiResponseErrorHandling(
     async () => {

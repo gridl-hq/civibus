@@ -37,8 +37,6 @@ function getCompareSearchResponse(url: URL): CompareFixtureResponse | null {
   };
 }
 
-/**
- */
 function getComparePersonResponse(url: URL): CompareFixtureResponse | null {
   const match = url.pathname.match(
     /^\/v1\/person\/([^/]+)(?:\/(contribution-insights|top-donors|top-employers))?$/
@@ -90,8 +88,6 @@ function getCompareCandidateListResponse(url: URL): CompareFixtureResponse | nul
   return fixture === undefined ? null : { status: 200, body: fixture.candidateList };
 }
 
-/**
- */
 function getCompareCandidateResponse(url: URL): CompareFixtureResponse | null {
   const match = url.pathname.match(
     /^\/v1\/candidates\/([^/]+)(?:\/(summary|independent-expenditures(?:\/summary)?))?$/
@@ -216,8 +212,6 @@ function isCivicGeometryRequest(url: URL): boolean {
   return hasOnlyAllowedQueryParams(url, ["level", "state"]);
 }
 
-/**
- */
 function getNcCivicGeometryFixture(url: URL): unknown | null {
   if (!isCivicGeometryRequest(url)) {
     return null;
@@ -284,8 +278,6 @@ const standardCandidateFixtures = [
 ] as const;
 type StandardCandidateFixture = (typeof standardCandidateFixtures)[number];
 
-/**
- */
 function getCommitteeFixtureById(committeeId: string | null): CommitteeFixture | null {
   if (committeeId === smokeFixtures.committee.id) {
     return smokeFixtures.committee;
@@ -438,8 +430,6 @@ function getCommitteeFixtureResponseByPath(pathname: string): { body: unknown } 
   return null;
 }
 
-/**
- */
 function buildPagedListResponse<TItem>(params: {
   url: URL;
   items: readonly TItem[];

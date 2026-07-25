@@ -53,8 +53,6 @@ type PersonRankedPartyRow = RankedPartyRow & {
   barPercent: number;
 };
 
-/**
- */
 export type PersonContributionInsightsPresentation = {
   emptyMessage: string | null;
   caveatMessages: string[];
@@ -208,8 +206,6 @@ function buildSingleSeries(
   return [{ id, label, points }];
 }
 
-/**
- */
 function resolveContributionInsightsEmptyMessage(insights: PersonContributionInsights): string | null {
   if (insights.has_data) {
     return null;
@@ -250,8 +246,6 @@ function resolveExcludedGeographyMessage(insights: PersonContributionInsights): 
   return CONTRIBUTION_INSIGHTS_EXCLUDED_GEOGRAPHY_MESSAGES[excludedGeography] ?? null;
 }
 
-/**
- */
 function resolveContributionInsightsGeographyNote(
   insights: PersonContributionInsights,
   hasDistrictGeography: boolean
@@ -303,8 +297,6 @@ function formatDistrictShareHeadline(share: SerializedMoney | null): string {
   return `${Math.round(parsed * 100)}% in district`;
 }
 
-/**
- */
 function buildDistrictShareSummary(districtShare: ContributionInsightsDistrictShare): string {
   if (
     !districtShare.available ||
@@ -367,8 +359,6 @@ function hasContributionTotals(source: ContributionInsightsTotalsSource): boolea
   return source !== "none";
 }
 
-/**
- */
 function buildTotalSummaryView(
   key: PersonContributionTotalSummaryKey,
   label: string,
@@ -398,8 +388,6 @@ function getLatestCycleTotal(
   );
 }
 
-/**
- */
 function buildTotalSummaryViews(
   insights: PersonContributionInsights
 ): PersonContributionTotalSummaryView[] {
@@ -448,8 +436,6 @@ function sumMoney(summaries: CandidateFundraisingSummary[], field: PersonMoneyFi
   );
 }
 
-/**
- */
 function sumOptionalMoney(
   summaries: CandidateFundraisingSummary[],
   field: "cash_on_hand" | "debts_owed_by_committee" | "net_self_funding"
@@ -522,8 +508,6 @@ function buildAggregatePopulatedBasis(
     : "qualifying_transactions";
 }
 
-/**
- */
 function buildAggregateReceiptSourceComposition(
   summaries: CandidateFundraisingSummary[]
 ): ReceiptSourceComponent[] {
@@ -576,8 +560,6 @@ function getSharedSelectedCycle(summaries: CandidateFundraisingSummary[]): numbe
   return selectedCycle;
 }
 
-/**
- */
 export function buildPersonMoneyAtGlanceSummary(
   summaries: CandidateFundraisingSummary[]
 ): PersonMoneyAtGlanceSummary {
@@ -615,8 +597,6 @@ export function buildPersonMoneyAtGlanceSummary(
   };
 }
 
-/**
- */
 export function buildPersonMoneyAtGlancePresentation(
   summary: PersonMoneyAtGlanceSummary
 ): PersonMoneyAtGlancePresentation {
@@ -642,8 +622,6 @@ export function buildPersonMoneyAtGlancePresentation(
   };
 }
 
-/**
- */
 export function buildPersonContributionInsightsPresentation(
   insights: PersonContributionInsights,
   personTopDonors: RankedTransactionParty[] = [],

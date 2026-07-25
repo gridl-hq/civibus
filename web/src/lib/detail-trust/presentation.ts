@@ -167,8 +167,6 @@ export function buildDonorVendorEmptyStateBanner(donorVendorTransactionCount: nu
   return donorVendorTransactionCount === 0 ? CAMPAIGN_FINANCE_NO_DONOR_VENDOR_TRANSACTIONS_MESSAGE : null;
 }
 
-/**
- */
 export function buildTrustSection(
   sources: SourceInfo[],
   options: BuildTrustSectionOptions = {}
