@@ -690,6 +690,8 @@ function formatSmokeCurrency(value: string): string {
 }
 
 
+/**
+ */
 async function fetchLiveCommitteeDiscoveryRecord(
   page: SmokePageApiClient,
   committeeId: string
@@ -730,6 +732,8 @@ async function fetchLiveCommitteeDiscoveryRecord(
   };
 }
 
+/**
+ */
 function buildDiscoveredLiveCommitteeAssertions(
   routeId: string,
   record: {

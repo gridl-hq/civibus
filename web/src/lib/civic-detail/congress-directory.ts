@@ -14,6 +14,8 @@ export type CongressFilterOption = {
   label: string;
 };
 
+/**
+ */
 export type CongressMemberRow = {
   id: string;
   personName: string;
@@ -144,6 +146,8 @@ function buildMoneySummaryByPersonId(
   return new Map(moneySummaries.map((summary) => [summary.person_id, summary]));
 }
 
+/**
+ */
 function buildRowMoney(summary: CongressMemberMoneySummary | undefined): Pick<
   CongressMemberRow,
   "hasFecMoney" | "totalRaised" | "outsideSupport" | "outsideAgainst" | "cashOnHand" | "moneySources"
@@ -195,6 +199,8 @@ function compareRowsByNameThenId(left: CongressMemberRow, right: CongressMemberR
   return nameComparison === 0 ? left.id.localeCompare(right.id) : nameComparison;
 }
 
+/**
+ */
 function sortCongressMemberRows(rows: CongressMemberRow[], sort: CongressMoneySort): CongressMemberRow[] {
   return [...rows].sort((left, right) => {
     const leftMetric = getCongressMoneyMetric(left, sort);
@@ -238,6 +244,8 @@ export function buildCongressCompareHref(selectedPersonIds: string[]): string | 
   return `/compare?people=${canonicalPersonIds.map((personId) => encodeURIComponent(personId)).join(",")}`;
 }
 
+/**
+ */
 export function buildCongressMemberRow(
   member: CongressMemberSummary,
   moneySummary?: CongressMemberMoneySummary
@@ -273,6 +281,8 @@ export function filterCongressMembers(
     .map((member) => buildCongressMemberRow(member, moneySummaryByPersonId.get(member.person_id)));
 }
 
+/**
+ */
 export function buildCongressDirectory(
   members: CongressMemberSummary[],
   filters: Partial<CongressDirectoryFilters>,

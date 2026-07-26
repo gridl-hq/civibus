@@ -115,6 +115,8 @@ export type ContestCandidateFinanceRow = {
   outsideSpendingFigure: CandidateOutsideSpendingFigure | null;
 };
 
+/**
+ */
 export type OfficeDetailPresentation = {
   title: string;
   sectionOrder: CivicFullSectionKey[];
@@ -133,6 +135,8 @@ export type OfficeDetailPresentation = {
   incompleteDataWarning: string | null;
 };
 
+/**
+ */
 export type ContestDetailPresentation = {
   title: string;
   sectionOrder: CivicFullSectionKey[];
@@ -254,6 +258,8 @@ function parseDateSortValue(value: string | null): number {
   return Number.isFinite(parsed) ? parsed : Number.NEGATIVE_INFINITY;
 }
 
+/**
+ */
 function assignUniqueAriaLabels(
   prefix: string,
   rows: { personName: string; disambiguator: string }[]
@@ -280,6 +286,8 @@ function assignUniqueAriaLabels(
   });
 }
 
+/**
+ */
 function buildOfficeholderRows(officeholders: OfficeholderSummary[]): OfficeholderRow[] {
   const baseRows = officeholders.map((officeholder) => ({
     id: officeholder.officeholding_id,
@@ -307,6 +315,8 @@ function buildIncompleteDataWarning(incompleteStates: OfficeIncompleteDataState[
     .join(" ");
 }
 
+/**
+ */
 function formatOfficeLevel(officeLevel: string): string {
   const mappedLabel = OFFICE_LEVEL_LABEL_BY_LEVEL[officeLevel as (typeof OFFICE_LEVELS)[number]];
   if (mappedLabel) {
@@ -363,6 +373,8 @@ function isOfficeCurrentHolderCardValue(value: unknown): value is OfficeCurrentH
   );
 }
 
+/**
+ */
 function buildOfficeCurrentHolderCard(detail: OfficeDetailResponse): OfficeCurrentHolderCard | null {
   const holder = detail.current_holder_card;
   if (!isOfficeCurrentHolderCardValue(holder)) {
@@ -397,6 +409,8 @@ function buildOfficeCurrentHolderCard(detail: OfficeDetailResponse): OfficeCurre
   };
 }
 
+/**
+ */
 function buildOfficeCurrentHolderEmptyMessage(
   detail: OfficeDetailResponse,
   officeholderRows: OfficeholderRow[],
@@ -420,6 +434,8 @@ function buildOfficeCurrentHolderEmptyMessage(
   return OFFICE_CURRENT_HOLDER_EMPTY_MESSAGE;
 }
 
+/**
+ */
 function buildOfficeTimelineRows(detail: OfficeDetailResponse): OfficeTimelineRow[] {
   // Some smoke fixtures can lag the backend contract during staged rollout.
   // Keep the renderer resilient by treating missing timeline payloads as empty.
@@ -461,6 +477,8 @@ function buildOfficeTimelineRows(detail: OfficeDetailResponse): OfficeTimelineRo
   });
 }
 
+/**
+ */
 function buildOfficeRecentContestRows(detail: OfficeDetailResponse): OfficeRecentContestRow[] {
   const rows = Array.isArray(detail.recent_contests) ? [...detail.recent_contests] : [];
   rows.sort((a, b) => {
@@ -484,6 +502,8 @@ function buildOfficeRecentContestRows(detail: OfficeDetailResponse): OfficeRecen
   }));
 }
 
+/**
+ */
 function buildContestCandidacyRows(
   candidacies: CandidacySummary[],
   winnerCandidacyId: string | null | undefined,
@@ -564,6 +584,8 @@ function getContestLinkSelectedCycle(
   return getContestFinanceSelectedCycle(financeSection) ?? fallbackSelectedCycle;
 }
 
+/**
+ */
 function buildContestLinkSelectedCycleByPersonId(
   candidacies: CandidacySummary[],
   candidateFinanceByPersonId: ContestCandidateFinanceByPersonId,
@@ -594,6 +616,8 @@ function getContestSelectedCycle(
   return null;
 }
 
+/**
+ */
 function buildContestCandidateFinanceFacts(
   summary: CandidateFundraisingSummary | null
 ): CivicFactRow[] {
@@ -613,6 +637,8 @@ function buildContestCandidateFinanceFacts(
   ];
 }
 
+/**
+ */
 function buildContestCandidateFinanceRows(
   candidacyRows: ContestCandidacyRow[],
   candidateFinanceByPersonId: ContestCandidateFinanceByPersonId,
@@ -739,6 +765,8 @@ export function buildOfficeholdingDetailMetadataFromDetail(
   return buildOfficeholdingDetailMetadata(detail.person_name);
 }
 
+/**
+ */
 export function buildOfficeDetailPresentation(detail: OfficeDetailResponse): OfficeDetailPresentation {
   const officeholderRows = buildOfficeholderRows(detail.current_officeholders);
   const timelineRows = buildOfficeTimelineRows(detail);
@@ -774,6 +802,8 @@ type BuildContestDetailPresentationOptions = {
   selectedCycle?: number | null;
 };
 
+/**
+ */
 export function buildContestDetailPresentation(
   detail: ContestDetailResponse,
   options?: BuildContestDetailPresentationOptions

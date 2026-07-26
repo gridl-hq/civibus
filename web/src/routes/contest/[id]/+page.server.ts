@@ -17,6 +17,8 @@ function parseSelectedCycleParam(value: string | null): number | undefined {
   return Number.isInteger(parsed) ? parsed : undefined;
 }
 
+/**
+ */
 function parseElectionYearCycle(electionDate: string | null | undefined): number | undefined {
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(electionDate ?? "");
   if (match === null) {
@@ -37,6 +39,8 @@ function parseElectionYearCycle(electionDate: string | null | undefined): number
   return Number(year);
 }
 
+/**
+ */
 export const load: PageServerLoad = ({ params, locals, url }) =>
   withApiResponseErrorHandling(async () => {
     const contest = await fetchContestDetail(locals.api, { id: params.id });
