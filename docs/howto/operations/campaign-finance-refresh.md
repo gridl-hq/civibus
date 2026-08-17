@@ -39,7 +39,9 @@ historical `MUTATING — not re-run` commands from Stage 3.
 ### Automatic scheduler observation
 
 A scheduler watch is read-only and must use the creation-anchored window recorded
-in the current `ROADMAP.md` weekly-refresh row. Before any Fly or database probe,
+in the weekly-refresh row of the frozen roadmap archive (private dev repository;
+the row predates the 2026-08-15 Beads cutover and remains valid historical
+configuration evidence). Before any Fly or database probe,
 record that the watcher issued no lifecycle or production command and prove
 there are zero other running Civibus lanes, unless the dispatch record contains
 an explicit pre-watch waiver.
@@ -84,7 +86,7 @@ Prove the repository plan locally before considering production:
 uv run python -m core.refresh.runner --scope federal --dry-run
 ```
 
-The dry-run must exit `0` with nine unique ordered keys, with no
+The dry-run must exit `0` with ten unique ordered keys, with no
 `federal-irs-527`. The exact order is tested in
 `core/test_refresh_runner.py` and must not be restated here.
 

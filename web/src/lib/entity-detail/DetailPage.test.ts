@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { PersonCandidateFinanceSection } from "$lib/server/api/campaign-finance-detail";
 import type { EntityDetailPageBundle } from "$lib/server/api/entity-detail";
 import DetailPage from "./DetailPage.svelte";
+import { buildPersonDetailFixture } from "./detail_page_test_fixtures";
 
 vi.mock("$app/navigation", () => ({
   goto: vi.fn()
@@ -339,49 +340,24 @@ function buildPersonPageBundle(
 ): EntityDetailPageBundle {
   return {
     entityType: "person",
-    detail: {
-      id: PERSON_ID,
-      canonical_name: "Jane Doe",
-      name_variants: [],
-      first_name: "Jane",
-      middle_name: null,
-      last_name: "Doe",
-      suffix: null,
-      occupation: "Attorney",
-      education: "State University",
-      date_of_birth: null,
-      year_of_birth: 1985,
-      bio_text: null,
-      bio_source_url: null,
-      bio_license: null,
-      bio_pulled_at: null,
-      identifiers: { fec_candidate_id: "H0NC01001" },
-      primary_address_id: null,
-      er_cluster_id: null,
-      er_confidence: null,
-      current_office: {
-        officeholding_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-        office_id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
-        office_name: "City Council Member",
-        office_level: "municipal",
-        state: "NC"
-      },
-      portrait: {
-        status: "active",
-        rights_status: "licensed",
-        source_image_url: "https://images.example.org/jane-doe.jpg",
-        mime_type: "image/jpeg",
-        width_px: 512,
-        height_px: 512
-      },
-      sources: []
-    },
+    detail: buildPersonDetailFixture(),
     personFinanceSections: asSettled([]),
     personContributionInsights: asSettled(CONTRIBUTION_INSIGHTS),
     personTopDonors: asSettled(PERSON_TOP_DONORS),
     personTopEmployers: asSettled(PERSON_TOP_EMPLOYERS),
     ...overrides
   };
+}
+
+function buildPersonPageBundleWithoutCurrentOffice(): EntityDetailPageBundle {
+  const data = buildPersonPageBundle();
+  if (data.entityType !== "person" || !("current_office" in data.detail)) {
+    throw new Error("Expected a person detail bundle with current-office context.");
+  }
+
+  const { current_office: _currentOffice, ...detail } = data.detail;
+
+  return buildPersonPageBundle({ detail });
 }
 
 describe("entity detail page rendering", () => {
@@ -404,6 +380,23 @@ describe("entity detail page rendering", () => {
     expect(rendered.body).not.toContain("Civic Record");
     expect(rendered.body).not.toContain("Officeholding timeline");
     expect(rendered.body).not.toContain("Entity internals");
+  });
+
+  it("renders canonical person facts without current-office rows when current office is omitted", () => {
+    const rendered = render(DetailPage, {
+      props: {
+        data: buildPersonPageBundleWithoutCurrentOffice()
+      }
+    });
+
+    expect(rendered.body).toContain("Jane Doe");
+    expect(rendered.body).toContain("<h3>Core attributes</h3>");
+    expect(rendered.body).toContain("<dt>Year of birth</dt>");
+    expect(rendered.body).toContain("<dd>1985</dd>");
+    expect(rendered.body).toContain("<dt>Identifiers</dt>");
+    expect(rendered.body).toContain("<dd>1</dd>");
+    expect(rendered.body).not.toContain("<dt>Current office</dt>");
+    expect(rendered.body).not.toContain("<dt>Office level</dt>");
   });
 
   it("renders a route-owned compare entry point when a person compare href is provided", () => {
