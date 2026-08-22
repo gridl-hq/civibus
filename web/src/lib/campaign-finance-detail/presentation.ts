@@ -1,5 +1,6 @@
 /** View-model builders for campaign-finance detail pages and route chooser states. */
 import { buildEntityRouteHref } from "$lib/entity-detail/contract";
+import { buildContestRoutePath } from "$lib/civic-detail/contract";
 import {
   buildTrustSection,
   type TrustSectionViewModel
@@ -967,7 +968,7 @@ export function buildCandidateFactRows(detail: CandidateDetailResponse): Campaig
   // shared person-name format. The unsafe row is labelled as the filed string
   // and exists as source evidence; formatCandidatePublicName owns that gate.
   const nameValue = formatCandidatePublicName(detail);
-  return [
+  const factRows: CampaignFinanceFactRow[] = [
     { label: nameLabel, value: nameValue, href: null },
     { label: "FEC candidate ID", value: detail.fec_candidate_id, href: null },
     buildLinkFactRow("Canonical person", "person", detail.person_id, PERSON_RECORD_LINK_VALUE_PREFIX),
@@ -983,6 +984,15 @@ export function buildCandidateFactRows(detail: CandidateDetailResponse): Campaig
     { label: "District", value: formatRowValue(detail.district), href: null },
     { label: "Incumbent/challenge", value: formatRowValue(detail.incumbent_challenge), href: null }
   ];
+  const firstCandidacy = detail.candidacies[0];
+  if (firstCandidacy !== undefined) {
+    factRows.push({
+      label: "Race",
+      value: firstCandidacy.contest_name,
+      href: buildContestRoutePath(firstCandidacy.contest_id)
+    });
+  }
+  return factRows;
 }
 
 /** Maps raw committee transactions into linked rows for the records table. */

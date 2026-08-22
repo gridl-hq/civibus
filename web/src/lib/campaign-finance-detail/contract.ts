@@ -48,6 +48,12 @@ export type CommitteeDetailResponse = {
   linked_candidates: CandidateListItem[];
 };
 
+export type CandidateCandidacySummary = {
+  contest_id: string;
+  contest_name: string;
+  election_date: string | null;
+};
+
 export type CandidateDetailResponse = {
   id: string;
   fec_candidate_id: string;
@@ -63,6 +69,7 @@ export type CandidateDetailResponse = {
   district: string | null;
   incumbent_challenge: string | null;
   principal_committee_id: string | null;
+  candidacies: CandidateCandidacySummary[];
   sources: SourceInfo[];
 };
 
@@ -589,6 +596,7 @@ export type CountySummaryRecipientCommittee = {
 export type CountySummaryLinkedCandidate = {
   candidate_id: string;
   candidate_name: string;
+  identity_is_safe: boolean;
   donor_total_cents: number;
   transaction_count: number;
 };
